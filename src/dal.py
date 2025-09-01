@@ -57,8 +57,8 @@ class Dal:
 
     def delete_by_conditions(self, index_name: str, conditions: dict):
         try:
-            print("start to delete")
             conditions_list = []
+
             for field, value in conditions.items():
                 if isinstance(value, list):
                     conditions_list.append({"terms": {field: value}})

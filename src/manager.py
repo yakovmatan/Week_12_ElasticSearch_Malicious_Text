@@ -19,7 +19,7 @@ class Manager:
         self.data_in_es = False
 
     def set_data(self):
-        #creaet index
+        # creaet index
         mapping = {
             "TweetID": {"type": "keyword"},
             "CreateDate": {"type": "keyword"},
@@ -45,9 +45,16 @@ class Manager:
         Deleting records from ElasticSearch that are not classified as anti-Semitic, 
         do not contain weapons, and have a neutral or positive sentiment.
         """
-        self.dal.delete_by_conditions(index_name=self.index_name, conditions={
-            "Antisemitic": 0,
-            "weapons": "",
-            "sentiment": ["neutral", "positive"]
-        })
-        self.data_in_es = True
+        # self.dal.delete_by_conditions(index_name=self.index_name, conditions={
+        #     "bool": {
+        #         "must": [
+        #             {"term": {"Antisemitic": "0"}},
+        #             {"terms": {"sentiment": ["neutral", "positive"]}}
+        #         ],
+        #         "must_not": [
+        #             {"exists": {"field": "weapons"}}
+        #         ]
+        #     }
+        # }
+        #                               )
+        # self.data_in_es = True
