@@ -50,6 +50,7 @@ class Manager:
             "weapons.keyword": "",
             "sentiment.keyword": ["neutral", "positive"]
         })
+        self.data_in_es = True
 
     def get_multiple_weapons(self):
         res = self.dal.get_documents(self.index_name, {
@@ -69,6 +70,9 @@ class Manager:
                     "must": [
                         {"term": {"Antisemitic": 1}},
                         {"exists": {"field": "weapons.keyword"}}
+                    ],
+                    "must_not": [
+                        {"term": {"weapons.keyword": ""}}
                     ]
                 }
             }

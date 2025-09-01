@@ -68,19 +68,22 @@ class Dal:
             query = {"bool": {"must": conditions_list}}
 
             res = self.es.delete_by_query(index=index_name, query=query)
-            print(res["deleted"])
+            print(f"Deleted {res['deleted']} documents")
         except Exception as e:
             print(f"Failed to delete documents from index {index_name}: {e}")
             return 0
 
     def get_documents(self, index_name , query):
+        try:
+            results = helpers.scan(
+                client=self.es,
+                index=index_name,
+                query=query,
+                _source=True
+            )
 
-        results = helpers.scan(
-            client=self.es,
-            index=index_name,
-            query=query,
-            _source=True
-        )
-
-        docs = list(results)
-        return docs
+            docs = list(results)
+            return docs
+        except Exception as e:
+            print(f"Failed to read from index {index_name}: {e}")
+            return

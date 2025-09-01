@@ -11,4 +11,4 @@ RUN python -m nltk.downloader -d /usr/local/share/nltk_data vader_lexicon
 
 COPY . .
 
-CMD ["python", "-m" , "src.main"]
+CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
