@@ -15,6 +15,12 @@ class Dal:
                 }
             })
 
+    def index_documents(self,index_name, data: list):
+        for doc in data:
+            res = self.es.index(index=index_name, document=doc)
+            print(f"result={res['result']}")
+
+
     def add_field(self, index_name, value_extractor, field_name):
         res = self.es.search(index=index_name, query={"match_all": {}}, size=1000)
 
