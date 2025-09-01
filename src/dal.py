@@ -68,7 +68,7 @@ class Dal:
             query = {"bool": {"must": conditions_list}}
 
             res = self.es.delete_by_query(index=index_name, query=query)
-            return res["deleted"]
+            print(res["deleted"])
         except Exception as e:
             print(f"Failed to delete documents from index {index_name}: {e}")
             return 0
