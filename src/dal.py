@@ -1,0 +1,44 @@
+from src.configuration import Configuration
+
+
+class Dal:
+
+    def __init__(self,connection: Configuration):
+        self.es = connection.get_es()
+
+
+
+    def create_index(self, index_name, mapping: dict):
+        if not self.es.indices.exists(index=index_name):
+            self.es.indices.create(index=index_name, mappings={
+                "properties": {mapping
+                }
+            })
+
+    def add_field(self, index_name, value_extractor, field_name):
+        res = self.es.search(index=index_name, query={"match_all": {}}, size=1000)
+
+        for hit in res["hits"]["hits"]:
+            doc_id = hit["_id"]
+            body_text = hit["_source"]["body"]
+            new_field = value_extractor(body_text)
+
+            self.es.update(
+                index=index_name,
+                id=doc_id,
+                doc={field_name: new_field}
+            )
+
+    def delete_by_conditions(self, index: str, conditions: dict):
+        conditions_list = []
+
+        for field, value in conditions.items():
+            if isinstance(value, list):
+                conditions_list.append({"terms": {field: value}})
+            else:
+                conditions_list.append({"term": {field: value}})
+
+        query = {"bool": {"must": conditions_list}}
+
+        res = self.es.delete_by_query(index=index, query=query)
+        return res["deleted"]

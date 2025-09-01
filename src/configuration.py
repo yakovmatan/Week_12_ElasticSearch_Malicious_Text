@@ -10,7 +10,7 @@ class Configuration:
         self.es:Elasticsearch = Elasticsearch(f'http://{conn}:9200')
         self.__availability_check()
 
-    def get_conn(self) -> Elasticsearch :
+    def get_es(self) -> Elasticsearch :
         return self.es
 
     def __availability_check(self):
