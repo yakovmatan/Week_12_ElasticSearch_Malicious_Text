@@ -13,18 +13,17 @@ class Manager:
         self.es = Configuration().get_es()
         self.read_files = ReadFile()
         self.tweets_injected = self.read_files.read_csv_file("../data/tweets_injected.csv")
-        self.weapon_list = self.read_files.read_txt_file("../data/weapon_list.txt")
+        self.weapon_list = self.read_files.read_txt_file("../data/weapon_list.txt").split('\n')
         self.dal = Dal(self.es)
         self.identifier = Identifier()
+        self.data_in_es = False
 
     def set_data(self):
-        # Entering data into Elasticsearch
-        self.dal.index_documents(self.index_name, self.tweets_injected)
         #creaet index
         mapping = {
             "TweetID": {"type": "keyword"},
-            "CreateDate": {"type": "keyword", "format": "yyyy-MM-dd HH:mm:ssXXX"},
-            "Antisemitic": {"type": "boolean"},
+            "CreateDate": {"type": "keyword"},
+            "Antisemitic": {"type": "integer"},
             "text": {
                 "type": "text",
                 "fields": {
@@ -33,19 +32,22 @@ class Manager:
             }
         }
         self.dal.create_index(index_name=self.index_name, mapping=mapping)
+        # Entering data into Elasticsearch
+        self.dal.index_documents(self.index_name, self.tweets_injected)
         # Add a sentiment field
         self.dal.add_field(self.index_name, self.identifier.sentiment_of_text, "sentiment")
         """
         Identifying keywords from a list of weapons and adding
         a field that includes the weapons found
         """
-        self.dal.add_field(self.index_name, self.identifier.weapon_in_text, "weapon")
+        self.dal.add_field(self.index_name, self.identifier.weapon_in_text, "weapons", self.weapon_list)
         """
         Deleting records from ElasticSearch that are not classified as anti-Semitic, 
         do not contain weapons, and have a neutral or positive sentiment.
         """
         self.dal.delete_by_conditions(index_name=self.index_name, conditions={
-            "antisemitic": False,
-            "weapons": False,
+            "Antisemitic": 0,
+            "weapons": "",
             "sentiment": ["neutral", "positive"]
         })
+        self.data_in_es = True

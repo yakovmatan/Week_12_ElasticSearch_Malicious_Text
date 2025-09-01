@@ -6,7 +6,7 @@ from elasticsearch import Elasticsearch
 class Configuration:
 
     def __init__(self):
-        conn = os.getenv('ES_HOST')
+        conn = os.getenv('ES_HOST','localhost')
         self.es:Elasticsearch = Elasticsearch(f'http://{conn}:9200')
         self.__availability_check()
 
