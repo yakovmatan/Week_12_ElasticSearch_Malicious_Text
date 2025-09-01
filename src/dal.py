@@ -72,3 +72,15 @@ class Dal:
         except Exception as e:
             print(f"Failed to delete documents from index {index_name}: {e}")
             return 0
+
+    def get_documents(self, index_name , query):
+
+        results = helpers.scan(
+            client=self.es,
+            index=index_name,
+            query=query,
+            _source=True
+        )
+
+        docs = list(results)
+        return docs
