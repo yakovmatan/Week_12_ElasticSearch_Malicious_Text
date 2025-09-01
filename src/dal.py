@@ -1,27 +1,23 @@
-from src.configuration import Configuration
+from elasticsearch import Elasticsearch
 
 
 class Dal:
 
-    def __init__(self,connection: Configuration):
-        self.es = connection.get_es()
+    def __init__(self, connection: Elasticsearch):
+        self.es = connection
 
-
-
-    def create_index(self, index_name, mapping: dict):
+    def create_index(self, index_name: str, mapping: dict):
         if not self.es.indices.exists(index=index_name):
             self.es.indices.create(index=index_name, mappings={
-                "properties": {mapping
-                }
+                "properties": mapping
             })
 
-    def index_documents(self,index_name, data: list):
+    def index_documents(self, index_name: str, data: list):
         for doc in data:
             res = self.es.index(index=index_name, document=doc)
             print(f"result={res['result']}")
 
-
-    def add_field(self, index_name, value_extractor, field_name):
+    def add_field(self, index_name: str, value_extractor, field_name):
         res = self.es.search(index=index_name, query={"match_all": {}}, size=1000)
 
         for hit in res["hits"]["hits"]:
@@ -35,7 +31,7 @@ class Dal:
                 doc={field_name: new_field}
             )
 
-    def delete_by_conditions(self, index: str, conditions: dict):
+    def delete_by_conditions(self, index_name: str, conditions: dict):
         conditions_list = []
 
         for field, value in conditions.items():
@@ -46,5 +42,5 @@ class Dal:
 
         query = {"bool": {"must": conditions_list}}
 
-        res = self.es.delete_by_query(index=index, query=query)
+        res = self.es.delete_by_query(index=index_name, query=query)
         return res["deleted"]

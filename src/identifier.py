@@ -8,7 +8,7 @@ class Identifier:
         nltk.data.find("sentiment/vader_lexicon.zip")
 
     @staticmethod
-    def _sentiment_of_text(text):
+    def sentiment_of_text(text):
         score = SentimentIntensityAnalyzer().polarity_scores(text)
         if score['compound'] >= 0.5:
             return 'positive'
