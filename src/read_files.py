@@ -3,20 +3,21 @@ import csv
 
 class ReadFile:
 
-    def __init__(self, path):
-        self.path = path
-
-
-    def read_txt_file(self):
-        if self.path.split('.')[-1] != "txt":
+    @staticmethod
+    def read_txt_file(path):
+        if path.split('.')[-1] != "txt":
             raise FileExistsError("that file not txt")
-        if not os.path.exists(self.path):
-            raise FileNotFoundError(f"file not found: {self.path}")
+        if not os.path.exists(path):
+            raise FileNotFoundError(f"file not found: {path}")
 
-        with open(self.path, "r") as file:
+        with open(path, "r") as file:
             return file.read()
 
-    def read_csv_file(self):
-        with open(self.path, 'r', newline='', encoding='utf-8') as csvfile:
+    @staticmethod
+    def read_csv_file(path):
+        data = []
+        with open(path, 'r', newline='', encoding='utf-8') as csvfile:
             reader = csv.DictReader(csvfile)
-            return reader
+            for row in reader:
+                data.append(row)
+        return data
