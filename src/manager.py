@@ -12,8 +12,8 @@ class Manager:
         self.index_name = os.getenv('INDEX_NAME', 'tweets')
         self.es = Configuration().get_es()
         self.read_files = ReadFile()
-        self.tweets_injected = self.read_files.read_csv_file("../data/tweets_injected.csv")
-        self.weapon_list = self.read_files.read_txt_file("../data/weapon_list.txt").split('\n')
+        self.tweets_injected = self.read_files.read_csv_file("data/tweets_injected.csv")
+        self.weapon_list = self.read_files.read_txt_file("data/weapon_list.txt").split('\n')
         self.dal = Dal(self.es)
         self.identifier = Identifier()
         self.data_in_es = False
